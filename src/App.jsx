@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import './App.css';
 
-// Sample dreams from different users
+// Sample dreams matching reference style
 const INITIAL_DREAMS = [
   {
     id: 1,
@@ -13,8 +13,7 @@ const INITIAL_DREAMS = [
     recurring: false,
     checkedOut: false,
     checkoutHistory: [],
-    color: '#f8c8dc',
-    coverColor: '#ff9eb3'
+    bookColor: 'red'
   },
   {
     id: 2,
@@ -26,8 +25,7 @@ const INITIAL_DREAMS = [
     recurring: true,
     checkedOut: false,
     checkoutHistory: [],
-    color: '#c8b8db',
-    coverColor: '#b19cd9'
+    bookColor: 'blue'
   },
   {
     id: 3,
@@ -39,8 +37,7 @@ const INITIAL_DREAMS = [
     recurring: false,
     checkedOut: false,
     checkoutHistory: [],
-    color: '#a8e6cf',
-    coverColor: '#7ecfb0'
+    bookColor: 'green'
   },
   {
     id: 4,
@@ -52,8 +49,7 @@ const INITIAL_DREAMS = [
     recurring: true,
     checkedOut: false,
     checkoutHistory: [],
-    color: '#fff9e6',
-    coverColor: '#ffe8b3'
+    bookColor: 'brown'
   }
 ];
 
@@ -72,7 +68,7 @@ function App() {
   });
   const [filter, setFilter] = useState('all');
   const [selectedDream, setSelectedDream] = useState(null);
-  const [viewMode, setViewMode] = useState('details'); // 'details' or 'reading'
+  const [viewMode, setViewMode] = useState('details');
 
   useEffect(() => {
     const saved = localStorage.getItem('sharedDreamLibrary');
@@ -103,7 +99,6 @@ function App() {
       setShowUserModal(false);
       setShowLibraryCard(true);
 
-      // Auto-hide library card after 3 seconds
       setTimeout(() => {
         setShowLibraryCard(false);
       }, 3000);
@@ -113,18 +108,14 @@ function App() {
   const addDream = () => {
     if (!newDream.title.trim()) return;
 
-    const colors = ['#f8c8dc', '#c8b8db', '#a8e6cf', '#fff9e6', '#ffd4e5', '#e8dff5'];
-    const coverColors = ['#ff9eb3', '#b19cd9', '#7ecfb0', '#ffe8b3', '#ffb3cc', '#d4c5f9'];
-    const randomIndex = Math.floor(Math.random() * colors.length);
-
+    const colors = ['red', 'blue', 'green', 'brown', 'purple'];
     const dream = {
       ...newDream,
       id: Date.now(),
       author: currentUser,
       checkedOut: false,
       checkoutHistory: [],
-      color: colors[randomIndex],
-      coverColor: coverColors[randomIndex]
+      bookColor: colors[Math.floor(Math.random() * colors.length)]
     };
 
     saveDreams([dream, ...dreams]);
@@ -152,8 +143,6 @@ function App() {
       return dream;
     });
     saveDreams(updated);
-
-    // Update selectedDream if it's the one being checked out
     setSelectedDream(updated.find(d => d.id === id));
   };
 
@@ -188,89 +177,149 @@ function App() {
 
   const myCheckedOutDreams = dreams.filter(d => d.checkedOut && d.currentReader === currentUser);
 
+  const getBookPattern = (color) => {
+    const patterns = {
+      'red': 'repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(0, 0, 0, 0.04) 8px, rgba(0, 0, 0, 0.04) 16px)',
+      'blue': 'repeating-linear-gradient(90deg, transparent, transparent 4px, rgba(0, 0, 0, 0.04) 4px, rgba(0, 0, 0, 0.04) 8px)',
+      'green': 'repeating-linear-gradient(0deg, transparent, transparent 6px, rgba(0, 0, 0, 0.04) 6px, rgba(0, 0, 0, 0.04) 12px)',
+      'brown': 'linear-gradient(to right, #f8f8f8 0%, #fff 50%, #f8f8f8 100%)',
+      'purple': 'radial-gradient(circle at 20% 20%, rgba(0, 0, 0, 0.03) 1px, transparent 1px), radial-gradient(circle at 80% 80%, rgba(0, 0, 0, 0.03) 1px, transparent 1px)'
+    };
+    return patterns[color] || patterns['brown'];
+  };
+
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: '#fafafa',
-      padding: '20px 10px'
-    }}>
-      {/* User Selection Modal */}
+    <div style={{ minHeight: '100vh', background: '#f5f5f5', padding: '20px 10px' }}>
+      {/* Welcome Screen */}
       {showUserModal && (
         <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'rgba(0,0,0,0.1)',
           display: 'flex',
+          flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          zIndex: 2000,
-          padding: '20px'
+          minHeight: '100vh',
+          padding: '40px',
+          animation: 'fadeIn 1s ease-in'
         }}>
           <div style={{
-            background: 'white',
-            padding: '30px',
-            maxWidth: '400px',
-            width: '100%',
-            border: '3px solid black',
+            background: '#fff',
+            color: '#1a1a1a',
+            padding: '60px 80px',
+            border: '3px solid #000',
+            borderRadius: '255px 15px 225px 15px/15px 225px 15px 255px',
+            boxShadow: '5px 5px 0px rgba(0, 0, 0, 0.1), 10px 10px 0px rgba(0, 0, 0, 0.05)',
             textAlign: 'center',
-            borderRadius: '255px 15px 225px 15px/15px 225px 15px 255px'
+            maxWidth: '600px',
+            position: 'relative'
           }}>
-            <h2 style={{
-              color: 'black',
-              marginBottom: '10px',
-              fontFamily: '"Reenie Beanie", cursive',
-              fontWeight: 'normal',
-              fontSize: '42px'
+            <div style={{
+              position: 'absolute',
+              top: '15px',
+              left: '15px',
+              width: '30px',
+              height: '30px',
+              border: '3px solid #000',
+              borderRight: 'none',
+              borderBottom: 'none',
+              borderRadius: '50% 0 0 0'
+            }}></div>
+            <div style={{
+              position: 'absolute',
+              bottom: '15px',
+              right: '15px',
+              width: '30px',
+              height: '30px',
+              border: '3px solid #000',
+              borderLeft: 'none',
+              borderTop: 'none',
+              borderRadius: '0 0 50% 0'
+            }}></div>
+
+            <h1 style={{
+              fontSize: '3.5rem',
+              marginBottom: '20px',
+              fontWeight: 700,
+              textTransform: 'uppercase',
+              letterSpacing: '3px',
+              position: 'relative',
+              fontFamily: '"Caveat", cursive'
             }}>
-              Welcome to the Dream Library!
-            </h2>
-            <p style={{ color: '#333', fontSize: '16px', marginBottom: '25px', fontFamily: '"Courier New", monospace' }}>
-              Please enter your name to get your library card:
+              Dream Library
+              <div style={{
+                position: 'absolute',
+                bottom: '-10px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                width: '200px',
+                height: '3px',
+                background: '#000',
+                borderRadius: '50%'
+              }}></div>
+            </h1>
+
+            <p style={{
+              fontSize: '1.5rem',
+              marginBottom: '40px',
+              fontStyle: 'italic',
+              color: '#333',
+              fontFamily: '"Caveat", cursive'
+            }}>
+              A Collection of Nocturnal Wanderings
             </p>
+
             <input
               type="text"
-              placeholder="your name..."
+              placeholder="Enter your name..."
               onKeyPress={(e) => {
                 if (e.key === 'Enter') setUser(e.target.value);
               }}
               style={{
                 width: '100%',
-                padding: '12px',
-                border: '2px solid black',
-                fontSize: '16px',
-                marginBottom: '15px',
-                textAlign: 'center',
-                fontFamily: '"Courier New", monospace'
+                padding: '15px 20px',
+                fontFamily: '"Architects Daughter", cursive',
+                fontSize: '1.3rem',
+                border: '3px solid #000',
+                borderRadius: '255px 15px 225px 15px/15px 225px 15px 255px',
+                background: '#fff',
+                marginBottom: '20px'
               }}
               autoFocus
             />
+
             <button
               onClick={(e) => {
                 const input = e.target.parentElement.querySelector('input');
                 setUser(input.value);
               }}
               style={{
-                width: '100%',
-                padding: '12px',
-                background: 'black',
-                border: '2px solid black',
-                color: 'white',
-                fontWeight: 'normal',
+                padding: '15px 50px',
+                fontFamily: '"Caveat", cursive',
+                fontSize: '1.5rem',
+                background: '#000',
+                color: '#fff',
+                border: '3px solid #000',
                 cursor: 'pointer',
-                fontSize: '16px',
-                fontFamily: '"Courier New", monospace'
+                borderRadius: '255px 15px 225px 15px/15px 225px 15px 255px',
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                letterSpacing: '2px'
+              }}
+              onMouseOver={(e) => {
+                e.target.style.background = '#fff';
+                e.target.style.color = '#000';
+              }}
+              onMouseOut={(e) => {
+                e.target.style.background = '#000';
+                e.target.style.color = '#fff';
               }}
             >
-              [ Get Library Card ]
+              Enter the Library
             </button>
           </div>
         </div>
       )}
 
-      {/* Library Card Display */}
+      {/* Library Card Screen */}
       {showLibraryCard && (
         <div style={{
           position: 'fixed',
@@ -278,7 +327,7 @@ function App() {
           left: 0,
           right: 0,
           bottom: 0,
-          background: 'rgba(0,0,0,0.3)',
+          background: 'rgba(0,0,0,0.8)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -287,726 +336,491 @@ function App() {
           animation: 'fadeIn 0.3s ease-in'
         }}>
           <div style={{
-            background: 'white',
+            background: '#fff',
+            width: '500px',
+            maxWidth: '90%',
             padding: '40px',
-            maxWidth: '400px',
-            width: '100%',
-            border: '4px solid black',
-            borderRadius: '15px',
-            boxShadow: '8px 8px 0 rgba(0,0,0,0.2)',
-            animation: 'slideDown 0.5s ease-out'
+            border: '4px solid #000',
+            borderRadius: '15px 255px 15px 255px/255px 15px 255px 15px',
+            boxShadow: '8px 8px 0px rgba(0, 0, 0, 0.1), 12px 12px 0px rgba(0, 0, 0, 0.05)',
+            fontFamily: '"Architects Daughter", cursive',
+            position: 'relative'
           }}>
             <div style={{
-              textAlign: 'center',
-              marginBottom: '20px',
-              fontSize: '32px',
-              fontFamily: '"Reenie Beanie", cursive'
-            }}>
-              Dream Library Card
-            </div>
+              position: 'absolute',
+              top: '20px',
+              left: '20px',
+              right: '20px',
+              bottom: '20px',
+              border: '2px dashed #000',
+              borderRadius: '10px 200px 10px 200px/200px 10px 200px 10px',
+              pointerEvents: 'none'
+            }}></div>
+
             <div style={{
-              border: '2px solid black',
-              padding: '20px',
+              textAlign: 'center',
+              marginBottom: '30px',
+              fontSize: '2rem',
+              fontWeight: 700,
+              textTransform: 'uppercase',
+              color: '#000',
+              letterSpacing: '3px',
+              position: 'relative'
+            }}>
+              Library Card
+              <div style={{ fontSize: '2rem', marginTop: '10px' }}>📚</div>
+            </div>
+
+            <div style={{ margin: '20px 0' }}>
+              {[
+                ['Name:', currentUser],
+                ['Date Issued:', new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })],
+                ['Department:', 'Dream Archives'],
+                ['Privileges:', 'Unlimited']
+              ].map(([label, value], i) => (
+                <div key={i} style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  margin: '15px 0',
+                  padding: '12px 0',
+                  borderBottom: '2px solid #000',
+                  fontSize: '1.2rem',
+                  color: '#000'
+                }}>
+                  <span style={{ fontWeight: 700 }}>{label}</span>
+                  <span>{value}</span>
+                </div>
+              ))}
+            </div>
+
+            <div style={{
+              textAlign: 'center',
+              marginTop: '30px',
+              fontSize: '1.6rem',
+              fontWeight: 700,
+              color: '#000',
+              letterSpacing: '4px',
+              padding: '15px',
+              border: '3px solid #000',
+              borderRadius: '50px',
+              background: '#f5f5f5'
+            }}>
+              № {Math.floor(Math.random() * 900000 + 100000)}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Main Library Screen - only show if user has entered name and card is hidden */}
+      {!showUserModal && !showLibraryCard && (
+        <>
+          {/* Header */}
+          <div style={{
+            background: '#fff',
+            padding: '40px',
+            textAlign: 'center',
+            border: 'none',
+            borderBottom: '4px solid #000',
+            boxShadow: '0 5px 0 rgba(0,0,0,0.1)',
+            position: 'relative',
+            marginBottom: '60px'
+          }}>
+            <div style={{
+              position: 'absolute',
+              bottom: '-8px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: '80%',
+              height: '4px',
+              background: 'repeating-linear-gradient(90deg, #000 0px, #000 10px, transparent 10px, transparent 20px)'
+            }}></div>
+
+            <h1 className="animated-title" style={{
+              fontSize: '3rem',
               marginBottom: '15px',
-              background: '#fff9e6'
+              fontWeight: 700,
+              textTransform: 'uppercase',
+              letterSpacing: '4px',
+              color: '#000',
+              fontFamily: '"Caveat", cursive'
             }}>
-              <div style={{
-                fontSize: '12px',
-                color: '#666',
-                marginBottom: '8px',
-                fontFamily: '"Courier New", monospace'
-              }}>
-                CARD HOLDER:
-              </div>
-              <div style={{
-                fontSize: '24px',
-                fontFamily: '"Reenie Beanie", cursive',
-                marginBottom: '15px',
-                borderBottom: '2px solid black',
-                paddingBottom: '8px'
-              }}>
-                {currentUser}
-              </div>
-              <div style={{
-                fontSize: '11px',
-                color: '#666',
-                fontFamily: '"Courier New", monospace'
-              }}>
-                ISSUED: {new Date().toLocaleDateString()}
-              </div>
-              <div style={{
-                fontSize: '11px',
-                color: '#666',
-                fontFamily: '"Courier New", monospace'
-              }}>
-                CARD NO: {Math.floor(Math.random() * 900000 + 100000)}
-              </div>
-            </div>
-            <div style={{
-              textAlign: 'center',
-              fontSize: '14px',
-              color: '#666',
-              fontFamily: '"Courier New", monospace'
+              The Dream Library
+            </h1>
+            <p style={{
+              fontSize: '1.4rem',
+              fontStyle: 'italic',
+              color: '#333',
+              fontFamily: '"Caveat", cursive'
             }}>
-              Welcome to our community of dreamers!
+              Welcome, {currentUser}
+            </p>
+          </div>
+
+          {/* Bookshelf Container */}
+          <div style={{
+            maxWidth: '1400px',
+            margin: '0 auto',
+            padding: '0 20px'
+          }}>
+            {/* Book Shelf */}
+            <div style={{ marginBottom: '100px', position: 'relative' }}>
+              <div style={{
+                position: 'absolute',
+                bottom: '-25px',
+                left: 0,
+                right: 0,
+                height: '40px',
+                background: '#fff',
+                border: '3px solid #000',
+                borderRadius: '5px',
+                boxShadow: '0 3px 0 #000, inset 0 -3px 0 rgba(0, 0, 0, 0.1)'
+              }}></div>
+
+              <h2 style={{
+                fontSize: '1.8rem',
+                marginBottom: '30px',
+                color: '#000',
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                letterSpacing: '2px',
+                position: 'relative',
+                paddingBottom: '10px',
+                fontFamily: '"Caveat", cursive'
+              }}>
+                Dream Collection
+                <div style={{
+                  position: 'absolute',
+                  bottom: 0,
+                  left: 0,
+                  width: '150px',
+                  height: '3px',
+                  background: '#000',
+                  borderRadius: '50%'
+                }}></div>
+              </h2>
+
+              <div style={{
+                display: 'flex',
+                gap: '8px',
+                flexWrap: 'wrap',
+                paddingBottom: '40px'
+              }}>
+                {filteredDreams.map(dream => (
+                  <BookSpine
+                    key={dream.id}
+                    dream={dream}
+                    onOpen={() => {
+                      setSelectedDream(dream);
+                      setViewMode('details');
+                    }}
+                    getPattern={getBookPattern}
+                  />
+                ))}
+              </div>
             </div>
           </div>
-        </div>
+        </>
       )}
 
-      {/* Header */}
-      <div style={{
-        textAlign: 'center',
-        marginBottom: '30px',
-        padding: '0 10px'
-      }}>
-        <h1 className="animated-title" style={{
-          fontSize: '64px',
-          color: 'black',
-          margin: '0 0 10px',
-          fontFamily: '"Reenie Beanie", cursive',
-          fontWeight: 'normal',
-          letterSpacing: '2px'
-        }}>
-          Dream Library
-        </h1>
-        <p style={{
-          fontSize: '20px',
-          color: '#555',
-          margin: '10px 0 20px',
-          fontFamily: '"Reenie Beanie", cursive'
-        }}>
-          a place to share and read dreams ~
-        </p>
-        <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap', padding: '0 10px' }}>
-          <div style={{
-            display: 'inline-block',
-            padding: '6px 16px',
-            background: 'white',
-            border: '2px solid black',
-            fontSize: '14px',
-            color: 'black',
-            borderRadius: '255px 15px 225px 15px/15px 225px 15px 255px',
-            fontFamily: '"Courier New", monospace'
-          }}>
-            {currentUser}
-          </div>
-          {myCheckedOutDreams.length > 0 && (
-            <div style={{
-              display: 'inline-block',
-              padding: '6px 16px',
-              background: 'white',
-              border: '2px solid black',
-              fontSize: '13px',
-              color: 'black',
-              borderRadius: '255px 15px 225px 15px/15px 225px 15px 255px',
-              fontFamily: '"Courier New", monospace'
-            }}>
-              reading: {myCheckedOutDreams.length}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Filter Buttons */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        gap: '8px',
-        marginBottom: '20px',
-        flexWrap: 'wrap',
-        padding: '0 10px'
-      }}>
-        {[
-          { key: 'all', label: 'all' },
-          { key: 'my-dreams', label: 'mine' },
-          { key: 'available', label: 'available' },
-          { key: 'checked-out', label: 'checked out' }
-        ].map(f => (
-          <button
-            key={f.key}
-            onClick={() => setFilter(f.key)}
-            style={{
-              padding: '6px 16px',
-              background: filter === f.key ? 'black' : 'white',
-              border: '2px solid black',
-              cursor: 'pointer',
-              fontSize: '14px',
-              color: filter === f.key ? 'white' : 'black',
-              transition: 'all 0.2s',
-              borderRadius: '255px 15px 225px 15px/15px 225px 15px 255px',
-              fontFamily: '"Courier New", monospace'
-            }}
-          >
-            {f.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Add New Dream Button */}
-      <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-        <button
-          onClick={() => setShowAddCard(true)}
-          style={{
-            padding: '12px 28px',
-            background: 'white',
-            border: '3px solid black',
-            cursor: 'pointer',
-            fontSize: '18px',
-            color: 'black',
-            fontWeight: 'bold',
-            transition: 'all 0.2s',
-            borderRadius: '255px 15px 225px 15px/15px 225px 15px 255px',
-            fontFamily: '"Courier New", monospace'
-          }}
-          onMouseOver={(e) => {
-            e.target.style.background = 'black';
-            e.target.style.color = 'white';
-          }}
-          onMouseOut={(e) => {
-            e.target.style.background = 'white';
-            e.target.style.color = 'black';
-          }}
-        >
-          + share a dream
-        </button>
-      </div>
-
-      {/* Add Dream Modal */}
-      {showAddCard && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'rgba(0,0,0,0.1)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000,
-          padding: '20px',
-          overflowY: 'auto'
-        }}>
-          <div style={{
-            background: 'white',
-            padding: '25px',
-            maxWidth: '500px',
-            width: '100%',
-            border: '3px solid black',
-            margin: '20px',
-            borderRadius: '255px 15px 225px 15px/15px 225px 15px 255px'
-          }}>
-            <h2 style={{
-              margin: '0 0 20px',
-              color: 'black',
-              textAlign: 'center',
-              fontFamily: '"Reenie Beanie", cursive',
-              fontWeight: 'normal',
-              fontSize: '38px'
-            }}>
-              Share Your Dream
-            </h2>
-
-            <div style={{ marginBottom: '15px' }}>
-              <label style={{
-                display: 'block',
-                marginBottom: '5px',
-                color: 'black',
-                fontSize: '12px',
-                fontFamily: '"Courier New", monospace'
-              }}>
-                title:
-              </label>
-              <input
-                type="text"
-                value={newDream.title}
-                onChange={(e) => setNewDream({...newDream, title: e.target.value})}
-                placeholder="..."
-                style={{
-                  width: '100%',
-                  padding: '10px',
-                  border: '2px solid black',
-                  fontSize: '14px',
-                  fontFamily: '"Courier New", monospace'
-                }}
-              />
-            </div>
-
-            <div style={{ marginBottom: '15px' }}>
-              <label style={{
-                display: 'block',
-                marginBottom: '5px',
-                color: 'black',
-                fontSize: '12px',
-                fontFamily: '"Courier New", monospace'
-              }}>
-                date:
-              </label>
-              <input
-                type="date"
-                value={newDream.date}
-                onChange={(e) => setNewDream({...newDream, date: e.target.value})}
-                style={{
-                  width: '100%',
-                  padding: '10px',
-                  border: '2px solid black',
-                  fontSize: '14px',
-                  fontFamily: '"Courier New", monospace'
-                }}
-              />
-            </div>
-
-            <div style={{ marginBottom: '15px' }}>
-              <label style={{
-                display: 'block',
-                marginBottom: '5px',
-                color: 'black',
-                fontSize: '12px',
-                fontFamily: '"Courier New", monospace'
-              }}>
-                theme/mood:
-              </label>
-              <input
-                type="text"
-                value={newDream.theme}
-                onChange={(e) => setNewDream({...newDream, theme: e.target.value})}
-                placeholder="..."
-                style={{
-                  width: '100%',
-                  padding: '10px',
-                  border: '2px solid black',
-                  fontSize: '14px',
-                  fontFamily: '"Courier New", monospace'
-                }}
-              />
-            </div>
-
-            <div style={{ marginBottom: '15px' }}>
-              <label style={{
-                display: 'block',
-                marginBottom: '5px',
-                color: 'black',
-                fontSize: '12px',
-                fontFamily: '"Courier New", monospace'
-              }}>
-                describe:
-              </label>
-              <textarea
-                value={newDream.description}
-                onChange={(e) => setNewDream({...newDream, description: e.target.value})}
-                placeholder="what happened..."
-                style={{
-                  width: '100%',
-                  padding: '10px',
-                  border: '2px solid black',
-                  fontSize: '14px',
-                  minHeight: '100px',
-                  resize: 'vertical',
-                  fontFamily: '"Courier New", monospace'
-                }}
-              />
-            </div>
-
-            <div style={{ marginBottom: '20px' }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
-                <input
-                  type="checkbox"
-                  checked={newDream.recurring}
-                  onChange={(e) => setNewDream({...newDream, recurring: e.target.checked})}
-                  style={{ width: '16px', height: '16px' }}
-                />
-                <span style={{ color: 'black', fontSize: '12px', fontFamily: '"Courier New", monospace' }}>
-                  recurring dream?
-                </span>
-              </label>
-            </div>
-
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <button
-                onClick={addDream}
-                style={{
-                  flex: 1,
-                  padding: '12px',
-                  background: 'black',
-                  border: '2px solid black',
-                  color: 'white',
-                  cursor: 'pointer',
-                  fontFamily: '"Courier New", monospace',
-                  fontSize: '14px'
-                }}
-              >
-                [share]
-              </button>
-              <button
-                onClick={() => setShowAddCard(false)}
-                style={{
-                  flex: 1,
-                  padding: '12px',
-                  background: 'white',
-                  border: '2px solid black',
-                  color: 'black',
-                  cursor: 'pointer',
-                  fontFamily: '"Courier New", monospace',
-                  fontSize: '14px'
-                }}
-              >
-                [cancel]
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Dream Details/Reading Modal */}
+      {/* Book Modal - showing when a book is selected */}
       {selectedDream && (
         <div style={{
           position: 'fixed',
           top: 0,
           left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'rgba(0,0,0,0.2)',
+          width: '100%',
+          height: '100%',
+          background: 'rgba(0, 0, 0, 0.8)',
+          zIndex: 1000,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          zIndex: 1500,
           padding: '20px',
+          animation: 'fadeIn 0.3s ease-in',
           overflowY: 'auto'
-        }}>
+        }}
+        onClick={() => {
+          setSelectedDream(null);
+          setViewMode('details');
+        }}
+        >
           <div style={{
-            background: 'white',
-            padding: '30px',
-            maxWidth: viewMode === 'reading' ? '700px' : '500px',
+            background: '#fff',
+            maxWidth: '800px',
             width: '100%',
-            border: '3px solid black',
-            position: 'relative',
-            margin: '20px',
-            borderRadius: '15px',
             maxHeight: '90vh',
-            overflowY: 'auto'
-          }}>
-            <button
-              onClick={() => {
-                setSelectedDream(null);
-                setViewMode('details');
-              }}
-              style={{
-                position: 'absolute',
-                top: '15px',
-                right: '15px',
-                background: 'white',
-                border: '2px solid black',
-                width: '30px',
-                height: '30px',
-                cursor: 'pointer',
-                fontSize: '16px',
-                color: 'black',
-                fontFamily: '"Courier New", monospace',
-                borderRadius: '3px'
-              }}
-            >
-              x
-            </button>
-
+            overflowY: 'auto',
+            border: '5px solid #000',
+            borderRadius: '20px 255px 20px 255px/255px 20px 255px 20px',
+            boxShadow: '10px 10px 0 rgba(0, 0, 0, 0.2), 15px 15px 0 rgba(0, 0, 0, 0.1)',
+            position: 'relative'
+          }}
+          onClick={(e) => e.stopPropagation()}
+          >
             {viewMode === 'details' ? (
-              // Book Cover View
-              <div>
+              <>
+                {/* Book Cover */}
                 <div style={{
-                  background: selectedDream.coverColor || '#f8c8dc',
-                  border: '3px solid black',
-                  padding: '40px 30px',
-                  marginBottom: '20px',
-                  minHeight: '250px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  alignItems: 'center',
+                  background: getBookPattern(selectedDream.bookColor),
+                  padding: '60px 40px',
                   textAlign: 'center',
-                  position: 'relative',
-                  boxShadow: 'inset 0 0 50px rgba(0,0,0,0.1)'
+                  borderBottom: '4px solid #000',
+                  color: '#000',
+                  position: 'relative'
                 }}>
-                  {selectedDream.recurring && (
-                    <div style={{
-                      position: 'absolute',
-                      top: '10px',
-                      right: '10px',
-                      background: 'black',
-                      color: 'white',
-                      padding: '4px 10px',
-                      fontSize: '10px',
-                      fontFamily: '"Courier New", monospace'
-                    }}>
-                      RECURRING
-                    </div>
-                  )}
+                  <div style={{
+                    position: 'absolute',
+                    top: '30px',
+                    left: '30px',
+                    right: '30px',
+                    bottom: '30px',
+                    border: '3px dashed #000',
+                    borderRadius: '10px'
+                  }}></div>
+
+                  <div style={{
+                    position: 'absolute',
+                    fontSize: '3rem',
+                    color: '#000',
+                    top: '20px',
+                    left: '50%',
+                    transform: 'translateX(-50%)'
+                  }}>✦</div>
 
                   <h2 style={{
-                    margin: '0',
-                    color: 'black',
-                    fontSize: '36px',
-                    fontFamily: '"Reenie Beanie", cursive',
-                    fontWeight: 'normal',
-                    textShadow: '2px 2px 0 rgba(255,255,255,0.5)'
+                    fontSize: '2.8rem',
+                    fontWeight: 700,
+                    marginBottom: '20px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '3px',
+                    position: 'relative',
+                    zIndex: 1,
+                    marginTop: '30px',
+                    fontFamily: '"Caveat", cursive'
                   }}>
                     {selectedDream.title}
                   </h2>
 
                   <div style={{
-                    marginTop: '20px',
-                    fontSize: '16px',
-                    fontFamily: '"Indie Flower", cursive',
-                    color: '#333'
+                    fontSize: '1.4rem',
+                    fontStyle: 'italic',
+                    position: 'relative',
+                    zIndex: 1,
+                    fontFamily: '"Architects Daughter", cursive'
                   }}>
                     by {selectedDream.author}
                   </div>
                 </div>
 
-                <div style={{
-                  marginBottom: '20px',
-                  padding: '15px',
-                  border: '2px solid black',
-                  background: '#f9f9f9'
-                }}>
-                  <div style={{
-                    fontSize: '12px',
-                    marginBottom: '10px',
-                    fontFamily: '"Courier New", monospace',
-                    color: '#666'
+                {/* Book Description */}
+                <div style={{ padding: '40px', color: '#000', background: '#fff' }}>
+                  <h3 style={{
+                    fontSize: '2rem',
+                    marginBottom: '20px',
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                    letterSpacing: '2px',
+                    color: '#000',
+                    position: 'relative',
+                    paddingBottom: '10px',
+                    fontFamily: '"Caveat", cursive'
                   }}>
-                    <div>Date: {selectedDream.date}</div>
-                    {selectedDream.theme && <div>Theme: {selectedDream.theme}</div>}
-                  </div>
+                    Synopsis
+                    <div style={{
+                      position: 'absolute',
+                      bottom: 0,
+                      left: 0,
+                      width: '100px',
+                      height: '3px',
+                      background: '#000'
+                    }}></div>
+                  </h3>
 
-                  <div style={{
-                    fontSize: '14px',
-                    lineHeight: '1.7',
-                    color: '#333',
-                    fontFamily: 'Georgia, serif',
-                    fontStyle: 'italic'
+                  <p style={{
+                    fontSize: '1.3rem',
+                    lineHeight: '1.8',
+                    marginBottom: '30px',
+                    fontFamily: '"Architects Daughter", cursive'
                   }}>
                     {selectedDream.description}
-                  </div>
-                </div>
+                  </p>
 
-                {selectedDream.checkoutHistory.length > 0 && (
                   <div style={{
-                    padding: '12px',
-                    marginBottom: '15px',
-                    fontSize: '11px',
-                    color: '#666',
-                    border: '1px solid #ccc',
-                    background: '#fafafa',
-                    fontFamily: '"Courier New", monospace'
+                    padding: '25px',
+                    background: '#f9f9f9',
+                    border: '3px dashed #000',
+                    margin: '20px 0',
+                    textAlign: 'center',
+                    fontFamily: '"Architects Daughter", cursive',
+                    fontSize: '1.2rem',
+                    fontWeight: 700,
+                    borderRadius: '10px'
                   }}>
-                    Read by {selectedDream.checkoutHistory.length} {selectedDream.checkoutHistory.length === 1 ? 'person' : 'people'}
+                    {!selectedDream.checkedOut ? (
+                      <div>📚 STATUS: AVAILABLE FOR CHECKOUT</div>
+                    ) : selectedDream.currentReader === currentUser ? (
+                      <div>✓ CHECKED OUT • DUE DATE: NEVER</div>
+                    ) : (
+                      <div>CHECKED OUT BY {selectedDream.currentReader.toUpperCase()}</div>
+                    )}
                   </div>
-                )}
 
-                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                  {!selectedDream.checkedOut ? (
-                    <>
-                      {selectedDream.author !== currentUser && (
-                        <button
-                          onClick={() => checkoutDream(selectedDream.id)}
-                          style={{
-                            flex: 1,
-                            minWidth: '150px',
-                            padding: '14px',
-                            background: 'black',
-                            border: '2px solid black',
-                            color: 'white',
-                            cursor: 'pointer',
-                            fontSize: '14px',
-                            fontFamily: '"Courier New", monospace',
-                            fontWeight: 'bold'
-                          }}
-                        >
-                          [ Check Out to Read ]
-                        </button>
-                      )}
-                      {selectedDream.author === currentUser && (
-                        <div style={{
+                  <div style={{ display: 'flex', gap: '20px', marginTop: '30px', flexWrap: 'wrap' }}>
+                    {!selectedDream.checkedOut && selectedDream.author !== currentUser && (
+                      <button
+                        onClick={() => checkoutDream(selectedDream.id)}
+                        style={{
                           flex: 1,
-                          padding: '14px',
-                          background: '#e0e0e0',
-                          border: '2px solid #999',
-                          textAlign: 'center',
-                          fontSize: '13px',
-                          color: '#666',
-                          fontFamily: '"Courier New", monospace'
-                        }}>
-                          This is your dream
-                        </div>
-                      )}
-                    </>
-                  ) : selectedDream.currentReader === currentUser ? (
-                    <>
+                          minWidth: '150px',
+                          padding: '15px',
+                          fontFamily: '"Caveat", cursive',
+                          fontSize: '1.3rem',
+                          border: '3px solid #000',
+                          cursor: 'pointer',
+                          fontWeight: 700,
+                          textTransform: 'uppercase',
+                          borderRadius: '255px 15px 225px 15px/15px 225px 15px 255px',
+                          background: '#000',
+                          color: '#fff'
+                        }}
+                      >
+                        Check Out Book
+                      </button>
+                    )}
+
+                    {selectedDream.checkedOut && selectedDream.currentReader === currentUser && (
                       <button
                         onClick={() => setViewMode('reading')}
                         style={{
                           flex: 1,
                           minWidth: '150px',
-                          padding: '14px',
-                          background: 'black',
-                          border: '2px solid black',
-                          color: 'white',
+                          padding: '15px',
+                          fontFamily: '"Caveat", cursive',
+                          fontSize: '1.3rem',
+                          border: '3px solid #000',
                           cursor: 'pointer',
-                          fontSize: '14px',
-                          fontFamily: '"Courier New", monospace',
-                          fontWeight: 'bold'
+                          fontWeight: 700,
+                          textTransform: 'uppercase',
+                          borderRadius: '255px 15px 225px 15px/15px 225px 15px 255px',
+                          background: '#000',
+                          color: '#fff'
                         }}
                       >
-                        [ Read Dream ]
+                        Read Book
                       </button>
-                      <button
-                        onClick={() => {
-                          returnDream(selectedDream.id);
-                          setSelectedDream(null);
-                        }}
-                        style={{
-                          padding: '14px 20px',
-                          background: 'white',
-                          border: '2px solid black',
-                          color: 'black',
-                          cursor: 'pointer',
-                          fontSize: '14px',
-                          fontFamily: '"Courier New", monospace'
-                        }}
-                      >
-                        [ Return ]
-                      </button>
-                    </>
-                  ) : (
-                    <div style={{
-                      flex: 1,
-                      padding: '14px',
-                      background: 'black',
-                      border: '2px solid black',
-                      textAlign: 'center',
-                      fontSize: '13px',
-                      color: 'white',
-                      fontFamily: '"Courier New", monospace'
-                    }}>
-                      Checked out by {selectedDream.currentReader}
-                    </div>
-                  )}
-                </div>
+                    )}
 
-                {selectedDream.author === currentUser && (
-                  <button
-                    onClick={() => {
-                      if (confirm('Delete your dream from the library?')) {
-                        deleteDream(selectedDream.id);
+                    <button
+                      onClick={() => {
                         setSelectedDream(null);
-                      }
-                    }}
-                    style={{
-                      marginTop: '10px',
-                      padding: '8px 16px',
-                      background: 'white',
-                      border: '1px solid #999',
-                      color: '#666',
-                      cursor: 'pointer',
-                      fontSize: '11px',
-                      fontFamily: '"Courier New", monospace',
-                      width: '100%'
-                    }}
-                  >
-                    [delete]
-                  </button>
-                )}
-              </div>
+                        setViewMode('details');
+                      }}
+                      style={{
+                        flex: 1,
+                        minWidth: '150px',
+                        padding: '15px',
+                        fontFamily: '"Caveat", cursive',
+                        fontSize: '1.3rem',
+                        border: '3px solid #000',
+                        cursor: 'pointer',
+                        fontWeight: 700,
+                        textTransform: 'uppercase',
+                        borderRadius: '255px 15px 225px 15px/15px 225px 15px 255px',
+                        background: '#fff',
+                        color: '#000'
+                      }}
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              </>
             ) : (
               // Reading View
-              <div>
+              <div style={{ padding: '40px', background: '#fff', color: '#000' }}>
                 <button
                   onClick={() => setViewMode('details')}
                   style={{
                     marginBottom: '20px',
                     padding: '8px 16px',
-                    background: 'white',
-                    border: '2px solid black',
-                    color: 'black',
+                    background: '#fff',
+                    border: '2px solid #000',
+                    color: '#000',
                     cursor: 'pointer',
                     fontSize: '12px',
-                    fontFamily: '"Courier New", monospace'
+                    fontFamily: '"Courier New", monospace',
+                    borderRadius: '5px'
                   }}
                 >
                   ← Back to Cover
                 </button>
 
-                {selectedDream.recurring && (
-                  <div style={{
-                    display: 'inline-block',
-                    background: 'black',
-                    color: 'white',
-                    padding: '4px 12px',
-                    fontSize: '10px',
-                    marginBottom: '15px',
-                    fontFamily: '"Courier New", monospace'
-                  }}>
-                    [RECURRING DREAM]
-                  </div>
-                )}
-
                 <h2 style={{
-                  margin: '0 0 15px',
-                  color: 'black',
-                  fontSize: '32px',
-                  fontFamily: '"Reenie Beanie", cursive',
-                  fontWeight: 'normal'
+                  margin: '0 0 30px',
+                  textAlign: 'center',
+                  fontWeight: 700,
+                  color: '#000',
+                  fontSize: '2.5rem',
+                  textTransform: 'uppercase',
+                  position: 'relative',
+                  paddingBottom: '20px',
+                  fontFamily: '"Caveat", cursive'
                 }}>
                   {selectedDream.title}
+                  <div style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    width: '200px',
+                    height: '4px',
+                    background: '#000',
+                    borderRadius: '50%'
+                  }}></div>
                 </h2>
 
                 <div style={{
-                  marginBottom: '25px',
-                  fontSize: '12px',
-                  color: '#666',
-                  paddingBottom: '15px',
-                  borderBottom: '2px solid black',
-                  fontFamily: '"Courier New", monospace'
-                }}>
-                  <div>By: {selectedDream.author}</div>
-                  <div>Date: {selectedDream.date}</div>
-                  {selectedDream.theme && <div>Theme: {selectedDream.theme}</div>}
-                </div>
-
-                <div style={{
+                  marginBottom: '40px',
                   padding: '30px',
-                  marginBottom: '25px',
-                  fontSize: '16px',
-                  lineHeight: '2',
-                  color: '#222',
-                  border: '2px solid black',
-                  background: '#fffef8',
-                  fontFamily: 'Georgia, serif',
-                  minHeight: '200px'
+                  background: '#f9f9f9',
+                  borderLeft: '5px solid #000',
+                  borderRadius: '5px',
+                  position: 'relative'
                 }}>
-                  {selectedDream.description}
-                </div>
-
-                {selectedDream.checkoutHistory.length > 0 && (
                   <div style={{
-                    padding: '15px',
-                    marginBottom: '20px',
-                    fontSize: '11px',
-                    color: '#666',
-                    border: '1px solid #ccc',
-                    background: '#fafafa',
-                    fontFamily: '"Courier New", monospace'
+                    position: 'absolute',
+                    top: '15px',
+                    right: '20px',
+                    fontSize: '1.5rem',
+                    color: '#000',
+                    opacity: 0.3
+                  }}>✦</div>
+
+                  <div style={{
+                    fontFamily: '"Architects Daughter", cursive',
+                    fontSize: '1rem',
+                    color: '#000',
+                    marginBottom: '15px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '1px',
+                    fontWeight: 700,
+                    padding: '8px 15px',
+                    background: '#fff',
+                    border: '2px solid #000',
+                    display: 'inline-block',
+                    borderRadius: '20px'
                   }}>
-                    <div style={{ fontWeight: 'bold', marginBottom: '8px' }}>
-                      Read by {selectedDream.checkoutHistory.length} {selectedDream.checkoutHistory.length === 1 ? 'person' : 'people'}:
-                    </div>
-                    {selectedDream.checkoutHistory.slice(-3).map((entry, i) => (
-                      <div key={i} style={{ marginTop: '4px' }}>
-                        • {entry.user} on {entry.date}
-                      </div>
-                    ))}
+                    {selectedDream.date}
                   </div>
-                )}
+
+                  <div style={{
+                    fontSize: '1.3rem',
+                    lineHeight: '1.9',
+                    fontFamily: '"Architects Daughter", cursive'
+                  }}>
+                    {selectedDream.description}
+                  </div>
+                </div>
 
                 <button
                   onClick={() => {
@@ -1015,66 +829,24 @@ function App() {
                   }}
                   style={{
                     width: '100%',
-                    padding: '14px',
-                    background: 'black',
-                    border: '2px solid black',
-                    color: 'white',
+                    padding: '15px 40px',
+                    fontFamily: '"Caveat", cursive',
+                    fontSize: '1.3rem',
+                    background: '#000',
+                    color: '#fff',
+                    border: '3px solid #000',
+                    borderRadius: '255px 15px 225px 15px/15px 225px 15px 255px',
                     cursor: 'pointer',
-                    fontSize: '14px',
-                    fontFamily: '"Courier New", monospace',
-                    fontWeight: 'bold'
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                    display: 'block',
+                    margin: '0 auto'
                   }}
                 >
-                  [ Return to Library ]
+                  Return to Library
                 </button>
               </div>
             )}
-          </div>
-        </div>
-      )}
-
-      {/* Bookshelf Grid - Books showing only titles */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))',
-        gap: '15px',
-        maxWidth: '1200px',
-        margin: '0 auto',
-        padding: '0 10px'
-      }}>
-        {filteredDreams.map(dream => (
-          <BookSpine
-            key={dream.id}
-            dream={dream}
-            currentUser={currentUser}
-            onOpen={() => {
-              setSelectedDream(dream);
-              setViewMode('details');
-            }}
-          />
-        ))}
-      </div>
-
-      {filteredDreams.length === 0 && (
-        <div style={{
-          textAlign: 'center',
-          padding: '60px 20px',
-          color: '#666'
-        }}>
-          <div style={{
-            display: 'inline-block',
-            background: 'white',
-            padding: '40px 60px',
-            border: '3px solid black',
-            borderRadius: '15px'
-          }}>
-            <div style={{ fontSize: '48px', marginBottom: '15px' }}>📚</div>
-            <p style={{ fontSize: '14px', margin: 0, fontFamily: '"Courier New", monospace' }}>
-              {filter === 'my-dreams' ? 'No dreams shared yet' :
-               filter === 'checked-out' ? 'No dreams checked out' :
-               filter === 'available' ? 'No dreams available' :
-               'Library is empty'}
-            </p>
           </div>
         </div>
       )}
@@ -1082,89 +854,62 @@ function App() {
   );
 }
 
-// Book Spine Component - Shows on bookshelf
-function BookSpine({ dream, currentUser, onOpen }) {
-  const isOwn = dream.author === currentUser;
-  const isCheckedOutByMe = dream.checkedOut && dream.currentReader === currentUser;
-
+// Book Spine Component
+function BookSpine({ dream, onOpen, getPattern }) {
   return (
     <div
       onClick={onOpen}
       style={{
-        background: dream.coverColor || dream.color || '#f8c8dc',
-        border: '3px solid black',
-        padding: '20px 15px',
-        position: 'relative',
-        transition: 'all 0.2s',
+        width: '45px',
+        height: '280px',
+        background: '#fff',
+        border: '2px solid #000',
         cursor: 'pointer',
-        minHeight: '200px',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        textAlign: 'center',
-        borderRadius: '8px',
-        boxShadow: '4px 4px 0 rgba(0,0,0,0.2)'
+        position: 'relative',
+        transition: 'all 0.3s ease',
+        boxShadow: '2px 2px 0 rgba(0, 0, 0, 0.15)',
+        backgroundImage: getPattern(dream.bookColor)
       }}
       onMouseOver={(e) => {
-        e.currentTarget.style.transform = 'translateY(-5px)';
-        e.currentTarget.style.boxShadow = '6px 8px 0 rgba(0,0,0,0.3)';
+        e.currentTarget.style.transform = 'translateY(-10px) rotate(-1deg)';
+        e.currentTarget.style.boxShadow = '3px 5px 0 rgba(0, 0, 0, 0.12), 5px 8px 0 rgba(0, 0, 0, 0.08)';
       }}
       onMouseOut={(e) => {
-        e.currentTarget.style.transform = 'translateY(0)';
-        e.currentTarget.style.boxShadow = '4px 4px 0 rgba(0,0,0,0.2)';
+        e.currentTarget.style.transform = 'translateY(0) rotate(0deg)';
+        e.currentTarget.style.boxShadow = '2px 2px 0 rgba(0, 0, 0, 0.15)';
       }}
     >
-      {dream.recurring && (
-        <div style={{
-          position: 'absolute',
-          top: '8px',
-          right: '8px',
-          fontSize: '16px'
-        }}>
-          ∞
-        </div>
-      )}
+      {/* Dashed border decoration */}
+      <div style={{
+        position: 'absolute',
+        top: '8px',
+        left: '3px',
+        right: '3px',
+        bottom: '8px',
+        border: '1px solid #000',
+        borderStyle: 'dashed'
+      }}></div>
 
-      <h3 style={{
-        margin: '0',
-        color: 'black',
-        fontSize: '22px',
-        fontFamily: '"Reenie Beanie", cursive',
-        fontWeight: 'normal',
-        lineHeight: '1.3',
-        wordBreak: 'break-word',
-        textShadow: '1px 1px 0 rgba(255,255,255,0.5)'
+      {/* Book Title */}
+      <div style={{
+        position: 'absolute',
+        bottom: '20px',
+        left: '50%',
+        transform: 'translateX(-50%) rotate(-90deg)',
+        transformOrigin: 'center',
+        fontSize: '0.75rem',
+        fontWeight: 600,
+        color: '#000',
+        whiteSpace: 'nowrap',
+        letterSpacing: '0.5px',
+        textTransform: 'none',
+        width: '260px',
+        textAlign: 'center',
+        zIndex: 10,
+        fontFamily: '"Architects Daughter", cursive'
       }}>
         {dream.title}
-      </h3>
-
-      <div style={{
-        marginTop: '15px',
-        fontSize: '11px',
-        fontFamily: '"Indie Flower", cursive',
-        color: '#333',
-        opacity: 0.8
-      }}>
-        {dream.author}
       </div>
-
-      {dream.checkedOut && (
-        <div style={{
-          position: 'absolute',
-          bottom: '8px',
-          left: '8px',
-          right: '8px',
-          fontSize: '9px',
-          padding: '3px 6px',
-          background: 'rgba(0,0,0,0.8)',
-          color: 'white',
-          borderRadius: '3px',
-          fontFamily: '"Courier New", monospace'
-        }}>
-          {isCheckedOutByMe ? '✓ checked out' : 'out'}
-        </div>
-      )}
     </div>
   );
 }
