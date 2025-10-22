@@ -1,5 +1,4 @@
 import { useRef, useState, useEffect } from 'react';
-import { Window, WindowHeader, WindowContent, Button, Frame } from '@react95/core';
 
 function Whiteboard({ onClose }) {
   const canvasRef = useRef(null);
@@ -23,14 +22,12 @@ function Whiteboard({ onClose }) {
     const rect = canvas.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-
     setIsDrawing(true);
     setLastPos({ x, y });
   };
 
   const draw = (e) => {
     if (!isDrawing) return;
-
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
     const rect = canvas.getBoundingClientRect();
@@ -40,15 +37,8 @@ function Whiteboard({ onClose }) {
     ctx.beginPath();
     ctx.moveTo(lastPos.x, lastPos.y);
     ctx.lineTo(x, y);
-
-    if (isErasing) {
-      ctx.strokeStyle = 'white';
-      ctx.lineWidth = brushSize * 3;
-    } else {
-      ctx.strokeStyle = color;
-      ctx.lineWidth = brushSize;
-    }
-
+    ctx.strokeStyle = isErasing ? 'white' : color;
+    ctx.lineWidth = isErasing ? brushSize * 3 : brushSize;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.stroke();
@@ -56,9 +46,7 @@ function Whiteboard({ onClose }) {
     setLastPos({ x, y });
   };
 
-  const stopDrawing = () => {
-    setIsDrawing(false);
-  };
+  const stopDrawing = () => setIsDrawing(false);
 
   const clearCanvas = () => {
     const canvas = canvasRef.current;
@@ -71,106 +59,104 @@ function Whiteboard({ onClose }) {
   const brushSizes = [1, 2, 4, 6, 8];
 
   return (
-    <Window
-      style={{
-        position: 'absolute',
-        left: '15%',
-        top: '8%',
-        width: '700px',
-      }}
-    >
-      <WindowHeader>
+    <div style={{
+      position: 'absolute',
+      left: '10%',
+      top: '8%',
+      width: '700px',
+      background: '#c0c0c0',
+      border: '2px outset #dfdfdf',
+      boxShadow: '2px 2px 10px rgba(0,0,0,0.3)'
+    }}>
+      {/* Title Bar */}
+      <div style={{
+        background: 'linear-gradient(to right, #000080, #1084d0)',
+        color: 'white',
+        padding: '3px 5px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        fontWeight: 'bold'
+      }}>
         <span>Paint - Whiteboard</span>
-        <Button onClick={onClose}>×</Button>
-      </WindowHeader>
-      <WindowContent>
+        <button onClick={onClose} style={{ width: '20px', height: '20px', padding: 0 }}>×</button>
+      </div>
+
+      {/* Content */}
+      <div style={{ padding: '10px', background: '#c0c0c0' }}>
         {/* Toolbar */}
-        <Frame
-          bg="white"
-          boxShadow="in"
-          padding={10}
-          style={{ marginBottom: '10px' }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '15px', flexWrap: 'wrap' }}>
-            {/* Drawing/Erasing Mode */}
-            <div>
-              <Button
-                active={!isErasing}
-                onClick={() => setIsErasing(false)}
-                style={{ marginRight: '5px' }}
-              >
-                ✏️ Draw
-              </Button>
-              <Button
-                active={isErasing}
-                onClick={() => setIsErasing(true)}
-              >
-                🧽 Erase
-              </Button>
-            </div>
+        <div style={{ marginBottom: '10px', padding: '10px', background: 'white', border: '2px inset' }}>
+          <button
+            onClick={() => setIsErasing(false)}
+            style={{ marginRight: '5px', background: isErasing ? '#c0c0c0' : '#000080', color: isErasing ? 'black' : 'white' }}
+          >
+            ✏️ Draw
+          </button>
+          <button
+            onClick={() => setIsErasing(true)}
+            style={{ marginRight: '15px', background: isErasing ? '#000080' : '#c0c0c0', color: isErasing ? 'white' : 'black' }}
+          >
+            🧽 Erase
+          </button>
 
-            {/* Color Picker */}
-            {!isErasing && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                <span style={{ fontSize: '12px' }}>Color:</span>
-                {colors.map((c) => (
-                  <div
-                    key={c}
-                    onClick={() => setColor(c)}
-                    style={{
-                      width: '24px',
-                      height: '24px',
-                      backgroundColor: c,
-                      border: color === c ? '3px solid #000080' : '1px solid #000',
-                      cursor: 'pointer',
-                      boxShadow: color === c ? 'inset -1px -1px #fff, inset 1px 1px #000' : 'none'
-                    }}
-                  />
-                ))}
-              </div>
-            )}
-
-            {/* Brush Size */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-              <span style={{ fontSize: '12px' }}>Size:</span>
-              {brushSizes.map((size) => (
-                <Button
-                  key={size}
-                  active={brushSize === size}
-                  onClick={() => setBrushSize(size)}
-                  style={{ padding: '4px 8px', fontSize: '11px' }}
-                >
-                  {size}px
-                </Button>
+          {!isErasing && (
+            <>
+              <span style={{ fontSize: '12px', marginRight: '5px' }}>Color:</span>
+              {colors.map((c) => (
+                <div
+                  key={c}
+                  onClick={() => setColor(c)}
+                  style={{
+                    display: 'inline-block',
+                    width: '24px',
+                    height: '24px',
+                    backgroundColor: c,
+                    border: color === c ? '3px solid #000080' : '1px solid #000',
+                    cursor: 'pointer',
+                    marginRight: '5px'
+                  }}
+                />
               ))}
-            </div>
+            </>
+          )}
 
-            {/* Clear Button */}
-            <Button onClick={clearCanvas}>
-              🗑️ Clear All
-            </Button>
-          </div>
-        </Frame>
+          <span style={{ fontSize: '12px', margin: '0 10px 0 15px' }}>Size:</span>
+          {brushSizes.map((size) => (
+            <button
+              key={size}
+              onClick={() => setBrushSize(size)}
+              style={{
+                padding: '4px 8px',
+                fontSize: '11px',
+                marginRight: '5px',
+                background: brushSize === size ? '#000080' : '#c0c0c0',
+                color: brushSize === size ? 'white' : 'black'
+              }}
+            >
+              {size}px
+            </button>
+          ))}
+
+          <button onClick={clearCanvas} style={{ marginLeft: '15px' }}>🗑️ Clear All</button>
+        </div>
 
         {/* Canvas */}
-        <Frame bg="white" boxShadow="in">
-          <canvas
-            ref={canvasRef}
-            width={660}
-            height={400}
-            onMouseDown={startDrawing}
-            onMouseMove={draw}
-            onMouseUp={stopDrawing}
-            onMouseLeave={stopDrawing}
-            style={{
-              cursor: isErasing ? 'cell' : 'crosshair',
-              display: 'block',
-              backgroundColor: 'white'
-            }}
-          />
-        </Frame>
+        <canvas
+          ref={canvasRef}
+          width={660}
+          height={400}
+          onMouseDown={startDrawing}
+          onMouseMove={draw}
+          onMouseUp={stopDrawing}
+          onMouseLeave={stopDrawing}
+          style={{
+            cursor: isErasing ? 'cell' : 'crosshair',
+            display: 'block',
+            backgroundColor: 'white',
+            border: '2px inset'
+          }}
+        />
 
-        {/* Status Bar */}
         <div style={{
           marginTop: '5px',
           padding: '4px 8px',
@@ -180,8 +166,8 @@ function Whiteboard({ onClose }) {
         }}>
           Mode: {isErasing ? 'Eraser' : 'Pen'} | Color: {color} | Size: {brushSize}px
         </div>
-      </WindowContent>
-    </Window>
+      </div>
+    </div>
   );
 }
 
