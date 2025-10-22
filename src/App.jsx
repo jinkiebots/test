@@ -427,13 +427,12 @@ function App() {
       {!showUserModal && !showLibraryCard && (
         <>
           {/* Header */}
-          <div style={{
+          <div className="sketch-card" style={{
             background: '#fff',
             padding: '40px',
             textAlign: 'center',
             border: 'none',
             borderBottom: '4px solid #000',
-            boxShadow: '0 5px 0 rgba(0,0,0,0.1)',
             position: 'relative',
             marginBottom: '60px'
           }}>
@@ -447,7 +446,7 @@ function App() {
               background: 'repeating-linear-gradient(90deg, #000 0px, #000 10px, transparent 10px, transparent 20px)'
             }}></div>
 
-            <h1 className="animated-title" style={{
+            <h1 className="animated-title sketch-title" style={{
               fontSize: '3rem',
               marginBottom: '15px',
               fontWeight: 700,
@@ -485,12 +484,9 @@ function App() {
               <select
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
+                className="sketch-select"
                 style={{
                   padding: '10px 14px',
-                  border: '3px solid #000',
-                  background: '#fff',
-                  color: '#000',
-                  borderRadius: '12px',
                   fontFamily: '"Architects Daughter", cursive'
                 }}
               >
@@ -505,25 +501,20 @@ function App() {
                 placeholder="Search title, theme, author..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                className="sketch-input"
                 style={{
                   flex: 1,
                   minWidth: '220px',
                   padding: '10px 14px',
-                  border: '3px solid #000',
-                  borderRadius: '255px 15px 225px 15px/15px 225px 15px 255px',
-                  background: '#fff',
                   fontFamily: '"Architects Daughter", cursive'
                 }}
               />
 
               <button
                 onClick={() => setShowAddCard(true)}
+                className="sketch-button"
                 style={{
                   padding: '10px 20px',
-                  border: '3px solid #000',
-                  borderRadius: '255px 15px 225px 15px/15px 225px 15px 255px',
-                  background: '#000',
-                  color: '#fff',
                   cursor: 'pointer',
                   fontFamily: '"Caveat", cursive',
                   fontWeight: 700,
@@ -701,11 +692,10 @@ function App() {
                   value={newDream.title}
                   onChange={(e) => setNewDream(d => ({ ...d, title: e.target.value }))}
                   placeholder="What should we call this dream?"
+                  className="sketch-input"
                   style={{
                     width: '100%',
                     padding: '12px 14px',
-                    border: '3px solid #000',
-                    borderRadius: '12px',
                     fontFamily: '"Architects Daughter", cursive'
                   }}
                 />
@@ -717,11 +707,10 @@ function App() {
                   type="date"
                   value={newDream.date}
                   onChange={(e) => setNewDream(d => ({ ...d, date: e.target.value }))}
+                  className="sketch-input"
                   style={{
                     width: '100%',
                     padding: '12px 14px',
-                    border: '3px solid #000',
-                    borderRadius: '12px',
                     background: '#fff'
                   }}
                 />
@@ -734,11 +723,10 @@ function App() {
                   value={newDream.theme}
                   onChange={(e) => setNewDream(d => ({ ...d, theme: e.target.value }))}
                   placeholder="e.g. Adventure, Mystery, Fantasy"
+                  className="sketch-input"
                   style={{
                     width: '100%',
                     padding: '12px 14px',
-                    border: '3px solid #000',
-                    borderRadius: '12px',
                     fontFamily: '"Architects Daughter", cursive'
                   }}
                 />
@@ -761,13 +749,11 @@ function App() {
                   onChange={(e) => setNewDream(d => ({ ...d, description: e.target.value }))}
                   rows={6}
                   placeholder="Write the dream as if it were a short story..."
+                  className="sketch-textarea"
                   style={{
                     width: '100%',
                     padding: '12px 14px',
-                    border: '3px solid #000',
-                    borderRadius: '12px',
                     fontFamily: '"Architects Daughter", cursive',
-                    resize: 'vertical',
                     background: '#fff'
                   }}
                 />
@@ -777,12 +763,9 @@ function App() {
             <div style={{ display: 'flex', gap: '12px', marginTop: '16px', justifyContent: 'flex-end' }}>
               <button
                 onClick={() => setShowAddCard(false)}
+                className="sketch-button"
                 style={{
                   padding: '10px 20px',
-                  border: '3px solid #000',
-                  background: '#fff',
-                  color: '#000',
-                  borderRadius: '12px',
                   cursor: 'pointer',
                   fontFamily: '"Caveat", cursive'
                 }}
@@ -792,12 +775,9 @@ function App() {
               <button
                 onClick={addDream}
                 disabled={!newDream.title.trim()}
+                className="sketch-button"
                 style={{
                   padding: '10px 24px',
-                  border: '3px solid #000',
-                  background: '#000',
-                  color: '#fff',
-                  borderRadius: '12px',
                   cursor: 'pointer',
                   fontFamily: '"Caveat", cursive',
                   opacity: newDream.title.trim() ? 1 : 0.6
