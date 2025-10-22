@@ -198,7 +198,7 @@ function App() {
             textAlign: 'center',
             borderRadius: '255px 15px 225px 15px/15px 225px 15px 255px'
           }}>
-            <h2 style={{ color: 'black', marginBottom: '10px', fontFamily: '"Caveat", cursive', fontWeight: 'bold', fontSize: '32px' }}>Welcome!</h2>
+            <h2 style={{ color: 'black', marginBottom: '10px', fontFamily: '"Reenie Beanie", cursive', fontWeight: 'normal', fontSize: '42px' }}>Welcome!</h2>
             <p style={{ color: '#333', fontSize: '14px', marginBottom: '25px' }}>
               enter your name:
             </p>
@@ -248,20 +248,20 @@ function App() {
         marginBottom: '40px'
       }}>
         <h1 className="animated-title" style={{
-          fontSize: '72px',
+          fontSize: '84px',
           color: 'black',
           margin: '0 0 10px',
-          fontFamily: '"Caveat", cursive',
-          fontWeight: 'bold',
-          letterSpacing: '3px'
+          fontFamily: '"Reenie Beanie", cursive',
+          fontWeight: 'normal',
+          letterSpacing: '2px'
         }}>
           Dream Library
         </h1>
         <p style={{
-          fontSize: '20px',
+          fontSize: '28px',
           color: '#555',
           margin: '10px 0 20px',
-          fontFamily: '"Indie Flower", cursive'
+          fontFamily: '"Reenie Beanie", cursive'
         }}>
           share your dreams with others ~
         </p>
@@ -379,7 +379,7 @@ function App() {
             margin: '20px',
             borderRadius: '255px 15px 225px 15px/15px 225px 15px 255px'
           }}>
-            <h2 style={{ margin: '0 0 20px', color: 'black', textAlign: 'center', fontFamily: '"Caveat", cursive', fontWeight: 'bold', fontSize: '32px' }}>
+            <h2 style={{ margin: '0 0 20px', color: 'black', textAlign: 'center', fontFamily: '"Reenie Beanie", cursive', fontWeight: 'normal', fontSize: '42px' }}>
               Share Your Dream
             </h2>
 
@@ -569,9 +569,9 @@ function App() {
             <h2 style={{
               margin: '0 0 15px',
               color: 'black',
-              fontSize: '28px',
-              fontFamily: '"Caveat", cursive',
-              fontWeight: 'bold'
+              fontSize: '36px',
+              fontFamily: '"Reenie Beanie", cursive',
+              fontWeight: 'normal'
             }}>
               {selectedDream.title}
             </h2>
@@ -764,9 +764,9 @@ function LibraryCard({ dream, currentUser, onOpen, onDelete }) {
       <h3 style={{
         margin: '0 0 10px',
         color: 'black',
-        fontSize: '19px',
-        fontFamily: '"Caveat", cursive',
-        fontWeight: 'bold',
+        fontSize: '26px',
+        fontFamily: '"Reenie Beanie", cursive',
+        fontWeight: 'normal',
         paddingRight: dream.recurring ? '80px' : '0'
       }}>
         {dream.title}
