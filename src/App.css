@@ -234,3 +234,29 @@ body, html {
   0%, 50%, 100% { opacity: 1; }
   25%, 75% { opacity: 0.3; }
 }
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  body, html {
+    font-size: 14px;
+  }
+
+  .animated-title {
+    font-size: 48px !important;
+  }
+
+  /* Adjust cloud sizes for mobile */
+  .cloud {
+    transform: scale(0.6);
+  }
+}
+
+@media (max-width: 480px) {
+  .animated-title {
+    font-size: 36px !important;
+  }
+
+  .cloud {
+    transform: scale(0.4);
+  }
+}
