@@ -1199,6 +1199,7 @@ function BookSpine({ dream, onOpen, getPattern }) {
   return (
     <div
       onClick={onOpen}
+      className="book-spine"
       style={{
         width: '45px',
         height: '280px',
@@ -1209,14 +1210,6 @@ function BookSpine({ dream, onOpen, getPattern }) {
         transition: 'all 0.3s ease',
         boxShadow: '2px 2px 0 rgba(0, 0, 0, 0.15)',
         backgroundImage: getPattern(dream.bookColor)
-      }}
-      onMouseOver={(e) => {
-        e.currentTarget.style.transform = 'translateY(-10px) rotate(-1deg)';
-        e.currentTarget.style.boxShadow = '3px 5px 0 rgba(0, 0, 0, 0.12), 5px 8px 0 rgba(0, 0, 0, 0.08)';
-      }}
-      onMouseOut={(e) => {
-        e.currentTarget.style.transform = 'translateY(0) rotate(0deg)';
-        e.currentTarget.style.boxShadow = '2px 2px 0 rgba(0, 0, 0, 0.15)';
       }}
     >
       {/* Dashed border decoration */}
